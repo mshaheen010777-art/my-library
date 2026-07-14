@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>قراءة روايات محمد ماجد شاهين</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Reem+Kufi:wght@500;700&display=swap');
+        
+        body {
+            background-color: #080808;
+            color: #d4af37;
+            font-family: 'Amiri', serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        h1, h2 {
+            font-family: 'Reem+Kufi', serif;
+            text-shadow: 0 0 15px rgba(212, 175, 55, 0.6);
+            text-align: center;
+        }
+
+        h1 { font-size: 3rem; margin-top: 40px; }
+
+        .container {
+            width: 90%;
+            max-width: 900px;
+            background: linear-gradient(135deg, #141414, #0b0b0b);
+            padding: 40px;
+            border: 2px solid #d4af37;
+            border-radius: 20px;
+            box-shadow: 0 0 35px rgba(212, 175, 55, 0.25);
+            text-align: center;
+            margin: 40px 0;
+            display: none; 
+        }
+
+        .active { display: block; }
+
+        button {
+            background: linear-gradient(45deg, #8a6f27, #e5c158, #8a6f27);
+            color: #000;
+            border: 1px solid #d4af37;
+            padding: 12px 30px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            font-family: 'Amiri', serif;
+            cursor: pointer;
+            border-radius: 30px;
+            margin: 10px;
+            transition: 0.3s all ease-in-out;
+            box-shadow: 0 4px 15px rgba(212, 175, 55, 0.3);
+        }
+
+        button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(212, 175, 55, 0.6);
+            background: linear-gradient(45deg, #e5c158, #ffd700, #e5c158);
+        }
+
+        input, select, textarea {
+            width: 85%;
+            padding: 12px;
+            margin: 12px 0;
+            border: 1px solid #d4af37;
+            background: #111;
+            color: #f1f1f1;
+            font-family: 'Amiri', serif;
+            font-size: 1.1rem;
+            border-radius: 8px;
+            outline: none;
+        }
+
+        /* تصميم غلاف الكتاب */
+        .novels-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 30px;
+            justify-content: center;
+            margin-top: 30px;
+        }
+
+        .book-card {
+            background: linear-gradient(135deg, #1c150b, #000);
+            border: 3px solid #d4af37;
+            width: 210px;
+            height: 320px;
+            border-radius: 5px 25px 25px 5px;
+            padding: 20px;
+            box-shadow: inset 15px 0 25px rgba(0,0,0,0.9), 0 15px 25px rgba(212, 175, 55, 0.2);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            align-items: center;
+            position: relative;
+            cursor: pointer;
+            transition: 0.4s ease;
+        }
+
+        .book-card:hover {
+            transform: scale(1.05) rotate(-2deg);
+        }
+
+        .book-title {
+            font-size: 1.6rem;
+            font-weight: bold;
+            color: #ffd700;
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .book-author {
+            font-size: 0.9rem;
+            color: #d4af37;
+            border-top: 1px dashed rgba(212, 175, 55, 0.4);
+            padding-top: 8px;
+            width: 90%;
+            text-align: center;
+        }
+
+        /* شاشة قراءة الرواية (تم التعديل لتصبح ككتاب مطبوع بدون خطوط تسطير) */
+        .book-reader {
+            background-color: #f4eadd; /* لون ورق كتاب واقعي */
+            color: #1a1105; 
+            border: 3px solid #8a6f27;
+            border-radius: 4px;
+            padding: 40px;
+            margin-top: 20px;
+            box-shadow: inset 0 0 60px rgba(138, 111, 39, 0.15), 0 10px 30px rgba(0,0,0,0.6);
+            text-align: right;
+            position: relative;
+        }
+
+        /* تأثير طية الكتاب في المنتصف */
+        .book-reader::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            right: 0;
+            width: 30px;
+            background: linear-gradient(to left, rgba(0,0,0,0.1), transparent);
+        }
+
+        .book-page {
+            line-height: 2.3rem; /* مسافة مريحة للعين بين السطور */
+            min-height: 450px;
+            font-size: 1.4rem;
+            word-wrap: break-word;
+            white-space: pre-wrap; 
+            text-align: justify; /* ترتيب النص ليكون متساوياً من الأطراف كالكتاب المطبوع */
+        }
+
+        .page-navigation {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 40px;
+            border-top: 1px solid rgba(138, 111, 39, 0.3);
+            padding-top: 20px;
+        }
+        
+        .page-number { font-size: 1.2rem; font-weight: bold; color: #8a6f27; }
+    </style>
+</head>
+<body>
+
+    <!-- الشاشة الرئيسية -->
+    <div id="main-screen" class="container active">
+        <h1>روايات محمد ماجد شاهين</h1>
+        <p style="font-size: 1.4rem; color: #ccc;">مرحباً بك في عالم الخيال والأساطير الملكية</p>
+        <button onclick="showSection('admin-login')">دخول كمدير</button>
+        <button onclick="showSection('visitor-screen')">دخول كزائر</button>
+    </div>
+
+    <!-- شاشة تسجيل دخول المدير -->
+    <div id="admin-login" class="container">
+        <h2>بوابة الإدارة الملكية</h2>
+        <input type="text" id="username" placeholder="اسم المستخدم"><br>
+        <input type="password" id="password" placeholder="الرقم السري"><br>
+        <button onclick="loginAdmin()">تسجيل الدخول</button>
+        <button onclick="showSection('main-screen')">رجوع</button>
+        <p id="error-msg" style="color: #ff4d4d; display: none;">اسم المستخدم أو الرقم السري غير صحيح!</p>
+    </div>
+
+    <!-- لوحة تحكم المدير -->
+    <div id="admin-dashboard" class="container">
+        <h2>إضافة رواية جاهزة</h2>
+        <p style="color: #bbb;">انسخ نص الرواية بالكامل والصقه هنا، وسيقوم النظام بتقسيمه كصفحات كتاب حقيقي!</p>
+        
+        <input type="text" id="novel-title" placeholder="اسم الرواية"><br>
+        <select id="novel-type">
+            <option value="رواية منفصلة">رواية منفصلة</option>
+            <option value="بداية سلسلة">بداية سلسلة</option>
+            <option value="جزء ثاني من سلسلة">جزء ثاني من سلسلة</option>
+            <option value="جزء أخير من سلسلة">جزء أخير من سلسلة</option>
+        </select><br>
+        
+        <textarea id="full-novel-text" rows="12" placeholder="الصق النص الكامل للرواية هنا..."></textarea><br>
+
+        <button onclick="createNovel()">نشر الرواية الآن</button>
+        <hr style="border-color: #d4af37; margin: 30px 0;">
+        <button onclick="showSection('visitor-screen')">معاينة المكتبة كزائر</button>
+        <button onclick="showSection('main-screen')">تسجيل خروج</button>
+    </div>
+
+    <!-- شاشة الزائر -->
+    <div id="visitor-screen" class="container" style="width: 95%; max-width: 1100px;">
+        <h2>المكتبة الفخمة للروايات</h2>
+        <div id="novels-container" class="novels-grid"></div>
+        <br><br>
+        <button onclick="showSection('main-screen')">العودة للرئيسية</button>
+    </div>
+
+    <!-- شاشة القراءة -->
+    <div id="reader-screen" class="container" style="width: 95%; max-width: 800px;">
+        <h2 id="reading-title" style="margin-bottom: 5px;"></h2>
+        <p id="reading-type" style="color: #d4af37; font-style: italic; margin-top: 0;"></p>
+        
+        <div class="book-reader">
+            <!-- تم تغيير الكلاس ليصبح صفحة كتاب مطبوع بدلاً من المسطر -->
+            <div id="book-text-content" class="book-page"></div>
+            <div class="page-navigation">
+                <button onclick="prevPage()" id="prev-btn">الصفحة السابقة</button>
+                <div class="page-number" id="page-indicator"></div>
+                <button onclick="nextPage()" id="next-btn">الصفحة التالية</button>
+            </div>
+        </div>
+        <br>
+        <button onclick="showSection('visitor-screen')">إغلاق الكتاب</button>
+    </div>
+
+    <script>
+        let novels = [];
+        let currentReadingNovel = null;
+        let currentPage = 1;
+
+        function showSection(sectionId) {
+            document.querySelectorAll('.container').forEach(el => el.classList.remove('active'));
+            document.getElementById(sectionId).classList.add('active');
+            if(sectionId === 'visitor-screen') renderNovels();
+        }
+
+        function loginAdmin() {
+            if (document.getElementById('username').value === '1m' && document.getElementById('password').value === '2') {
+                document.getElementById('error-msg').style.display = 'none';
+                document.getElementById('username').value = '';
+                document.getElementById('password').value = '';
+                showSection('admin-dashboard');
+            } else {
+                document.getElementById('error-msg').style.display = 'block';
+            }
+        }
+
+        function createNovel() {
+            let title = document.getElementById('novel-title').value;
+            let type = document.getElementById('novel-type').value;
+            let fullText = document.getElementById('full-novel-text').value;
+
+            if(title.trim() === '' || fullText.trim() === '') {
+                alert('الرجاء إدخال اسم الرواية ولصق النص الكامل!');
+                return;
+            }
+
+            // تقسيم النص لتكوين صفحات حقيقية
+            let charsPerPage = 1200; // عدد الأحرف في كل صفحة
+            let totalPages = Math.ceil(fullText.length / charsPerPage);
+            let pagesArray = {};
+
+            for(let i = 0; i < totalPages; i++) {
+                pagesArray[i + 1] = fullText.substring(i * charsPerPage, (i + 1) * charsPerPage);
+            }
+
+            let newNovel = {
+                id: Date.now(),
+                title: title,
+                type: type,
+                pages: pagesArray,
+                totalPages: totalPages
+            };
+
+            novels.push(newNovel);
+            alert(`تم نشر رواية "${title}" بنجاح!`);
+            
+            document.getElementById('novel-title').value = '';
+            document.getElementById('full-novel-text').value = '';
+        }
+
+        function renderNovels() {
+            let container = document.getElementById('novels-container');
+            container.innerHTML = ''; 
+            if(novels.length === 0) {
+                container.innerHTML = '<p style="font-size:1.3rem; color:#aaa;">المكتبة فارغة، بانتظار إبداعاتك.</p>';
+                return;
+            }
+            novels.forEach(novel => {
+                container.innerHTML += `
+                    <div class="book-card" onclick="openBookForReading(${novel.id})">
+                        <div class="book-title">${novel.title}</div>
+                        <div style="color: #aaa; text-align:center; margin-top:10px;">${novel.type}</div>
+                        <div class="book-author">بقلم: محمد ماجد شاهين</div>
+                    </div>`;
+            });
+        }
+
+        function openBookForReading(novelId) {
+            currentReadingNovel = novels.find(n => n.id === novelId);
+            currentPage = 1;
+            document.getElementById('reading-title').innerText = currentReadingNovel.title;
+            document.getElementById('reading-type').innerText = currentReadingNovel.type;
+            showSection('reader-screen');
+            displayPageContent();
+        }
+
+        function displayPageContent() {
+            document.getElementById('book-text-content').innerText = currentReadingNovel.pages[currentPage];
+            document.getElementById('page-indicator').innerText = `صفحة ${currentPage} من ${currentReadingNovel.totalPages}`;
+
+            document.getElementById('prev-btn').style.visibility = (currentPage === 1) ? 'hidden' : 'visible';
+            document.getElementById('next-btn').style.visibility = (currentPage === currentReadingNovel.totalPages) ? 'hidden' : 'visible';
+        }
+
+        function nextPage() {
+            if(currentPage < currentReadingNovel.totalPages) {
+                currentPage++;
+                displayPageContent();
+            }
+        }
+
+        function prevPage() {
+            if(currentPage > 1) {
+                currentPage--;
+                displayPageContent();
+            }
+        }
+    </script>
+</body>
+</html>
